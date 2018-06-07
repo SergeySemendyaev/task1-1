@@ -1,0 +1,27 @@
+{
+  "name": "task1-1",
+  "version": "1.0.0",
+  "description": "sorter",
+  "main": "main.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "task1-1"
+  },
+  "keywords": [
+    "sorter"
+  ],
+  "author": "SergeySemendyaev",
+  "license": "ISC",
+  "devDependencies": {
+    "uglifyjs-webpack-plugin": "^1.2.5",
+    "webpack": "^4.10.2",
+    "webpack-cli": "^2.1.4"
+  },
+  "dependencies": {
+    "systemjs": "^0.21.4",
+    "uglify-js": "^3.4.0"
+  }
+}

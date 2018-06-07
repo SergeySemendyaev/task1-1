@@ -1,0 +1,138 @@
+var sorter = null;
+visualizer = new Visualizer();
+
+input.oninput = function() {
+    var array = getInput();
+    sorter = new Sorter(array)
+    visualizer.createNodes(array);
+}
+
+next.onclick = function() {
+    if (sorter) {
+        var i = sorter.next();
+        if (i != undefined)
+            visualizer.swap(i);
+    }
+}
+
+prev.onclick = function() {
+    if (sorter) {
+        var i = sorter.prev();
+        if (i != undefined)
+            visualizer.swap(i);
+    }
+}
+
+function getInput() {
+    var result = [];
+    var length = input.value.length;
+    var lastSymbol = input.value[length - 1];
+    if (!Number.isInteger(+lastSymbol) || lastSymbol == " ")
+        input.value = input.value.substring(0, length - 1);
+    for (var i = 0; i < input.value.length; i++)
+        result.push(input.value[i]);
+    return result;
+}
+
+function Sorter(array) {
+    this.array = array;
+    var stack = [];
+    stack.i = [];
+    stack.j = [];
+    var i = 0;
+    var j = 0;
+    this.next = function() {
+        var length = array.length - 1;
+        if (length - i >= 0) {
+            while (array[length - j] >= array[length - j - 1] && i <= length) {
+                j++;
+                if (j == length && i < length) {
+                    j = 0;
+                    i++;
+                }
+            }
+            if (array[length - j] < array[length - j - 1]) {
+                stack.push(array.slice());
+                stack.i.push(i);
+                stack.j.push(j);
+                var temp = array[length - j];
+                array[length - j] = array[length - j - 1];
+                array[length - j - 1] = temp;
+                return j;
+            }
+        }
+    }
+    this.prev = function() {
+        if (stack.length != 0) {
+            this.array = stack.pop();
+            i = stack.i.pop();
+            j = stack.j.pop();
+            return j;
+        }
+    }
+}
+
+function Visualizer() {
+    var div = document.getElementsByClassName('list')[0];
+    var positionsList = [];
+    this.createNodes = function(array) {
+        var children = document.getElementsByClassName('array');
+        if (array.length == 0 && children.length != 0) {
+            positionsList = [];
+            while (div.hasChildNodes())
+                div.removeChild(children[0]);
+        }
+        if (array.length > children.length) {
+            for (var i = 0; i < array.length; i++) {
+                if (i < children.length && array[i] == children[i].innerHTML)
+                    continue;
+                positionsList.push((array.length - 1) * 17 + 10);
+                var span = document.createElement('span');
+                span.className = 'array';
+                //span.style.backgroundColor = 'rgb(255, 0, 0, 0.7)';
+                span.id = array.length - 1;
+                span.style.left = positionsList[array.length - 1] + 'px';
+                span.style.height = (array[array.length - 1] + 1) * 2 + 23 + 'px';
+                span.innerHTML = array[array.length - 1];
+                div.appendChild(span);
+                setTimeout(function() {
+                    span.style.backgroundColor = 'rgb(0, 0, 255, 0.2)';
+                }, 100);
+                div.appendChild(span);
+                while (i < children.length) {
+                    children[i].style.left = positionsList[i];
+                    children[i].id++;
+                    i++;
+                }
+            }
+        } else if (array.length < children.length) {
+            for (var i = 0; i < children.length; i++) {
+                if (array[i] == children[i].innerHTML)
+                    continue;
+                div.removeChild(children[i]);
+                positionsList.pop();
+                while (i < children.length) {
+                    children[i].style.left = positionsList[i];
+                    children[i].id--;
+                    i++;
+                }
+            }
+        }
+
+    }
+    this.swap = function(i) {
+        var spans = document.getElementsByClassName('array');
+        var length = spans.length - 1;
+        var span1 = document.getElementById(length - i);
+        var span2 = document.getElementById(length - i - 1);
+        span1.style.backgroundColor = span2.style.backgroundColor = 'rgb(255, 0, 0, 0.7)';
+        setTimeout(function() {
+            span1.style.backgroundColor = span2.style.backgroundColor = 'rgb(0, 0, 255, 0.2)'
+        }, 1600);
+        span1.style.left = positionsList[i];
+        span2.style.left = positionsList[i + 1];
+        var tempId = span1.id;
+        span1.id = span2.id;
+        span2.id = tempId;
+    }
+}
